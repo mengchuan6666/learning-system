@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.online.study.mapper.StudentPaperMapper">
+
+    <select id="findscore" resultType="com.online.study.entity.StudentPaper" parameterType="com.online.study.entity.StudentPaper">
+        select concat(sp.user,'(',e.name,')')as name,ifNull(sum(mark_score),0) as value
+        from student_Paper_Detail spd,student_paper sp,exam e,paper p,exam_paper ep
+        <where>
+            sp.id=spd.student_paper_id
+            <if test="id!=null and id!=''">
+                and sp.user_id=spd.user_id
+                and spd.user_id=#{id}
+            </if>
+            and sp.exam_id=e.id
+            and ep.exam_id=e.id
+            and ep.paper_id=p.id
+            and p.test=#{test}
+        </where>
+        GROUP BY spd.student_paper_id,sp.user
+    </select>
+
+    <select id="findscore2" resultType="com.online.study.entity.StudentPaper" parameterType="com.online.study.entity.StudentPaper">
+        select concat(sp.user,'(',e.name,')')as name,ifNull(sum(mark_score),0) as value
+        from student_Paper_Detail spd,student_paper sp,exam e,paper p,exam_paper ep
+        <where>
+            sp.id=spd.student_paper_id
+            and sp.exam_id=e.id
+            and ep.exam_id=e.id
+            and ep.paper_id=p.id
+            and p.test=#{test}
+        </where>
+        GROUP BY spd.student_paper_id,sp.user
+
+    </select>
+
+    <select id="selectStudentPaper" resultType="com.online.study.entity.StudentPaper">
+        select * from student_paper
+        left join exam on student_paper.exam_id=exam.id
+        left join exam_paper on exam_paper.exam_id=exam.id
+        left join paper on paper.id=exam_paper.paper_id
+        <where>
+            <if test="studentPaper.name!=null and studentPaper.name!=''">
+                and paper.name like concat('%', #{studentPaper.name}, '%')
+            </if>
+            <if test="studentPaper.test!=null and studentPaper.test!=''">
+                and paper.test=#{studentPaper.test}
+            </if>
+            <if test="studentPaper.userId!=null and studentPaper.userId!=''">
+                and student_paper.user_id=#{studentPaper.userId}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="getScore" resultType="com.online.study.entity.StudentPaper" parameterType="String">
+        select *  from student_paper sp
+        left join exam em on sp.exam_id=em.id
+        left join exam_paper ep on ep.exam_id=em.id
+        left join paper on paper.id=ep.paper_id
+        <where>
+            <if test="test!=null and test!=''">
+                and test=#{test}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getExcelData" resultType="com.online.study.entity.StudentPaper" parameterType="String">
+        select sp.id,user,sp.time,paper.name ename  from student_paper sp
+        left join exam em on sp.exam_id=em.id
+        left join exam_paper ep on ep.exam_id=em.id
+        left join paper on paper.id=ep.paper_id
+        <where>
+            <if test="test!=null and test!=''">
+                and test=#{test}
+            </if>
+        </where>
+    </select>
+</mapper>

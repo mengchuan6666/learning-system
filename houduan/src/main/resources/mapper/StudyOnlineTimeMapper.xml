@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.online.study.mapper.StudyOnlineTimeMapper">
+
+    <select id="selectForEcharts" resultType="com.online.study.entity.StudyOnlineTime">
+        select sot.uid,CONCAT(u.username,"[",sot.studay_date,"]") as uname,sum(sot.online_studay_time) as time
+        from study_online_time sot
+        join sys_user u on u.id=sot.uid
+        <where>
+            <if test="id!=null and id!=null"  >
+                sot.uid=#{id}
+            </if>
+        </where>
+        GROUP BY sot.uid,sot.studay_date
+    </select>
+</mapper>
